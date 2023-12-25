@@ -1,4 +1,7 @@
 This is the 1st Assignment in Blockchain Technologies 1
+
+
+
 Python Blockchain Implementation
 This Python project provides a basic blockchain implementation with features like asymmetric encryption, digital signatures, transaction history, and a Merkle tree.
 
