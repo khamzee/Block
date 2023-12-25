@@ -9,7 +9,6 @@ class KeyPair:
         self.private_key = private_key
 
 def generate_key_pair():
-    # Implement key pair generation (replace this with your own implementation)
     public_key = random.randint(2, 100)
     private_key = random.randint(101, 200)
     return KeyPair(public_key, private_key)
@@ -73,6 +72,7 @@ class Blockchain:
     def __init__(self):
         self.chain = [self.create_genesis_block()]
         self.difficulty = 2
+        self.accounts = {}
 
     def create_genesis_block(self):
         return Block()
@@ -85,7 +85,40 @@ class Blockchain:
         new_block.hash = new_block.calculate_hash()
         self.chain.append(new_block)
 
-# Step 3: Hashing
+    def get_balance(self, account_name):
+        balance = 0
+        for block in self.chain:
+            for transaction_data in block.transactions:
+                if 'transaction' in transaction_data:
+                    transaction = transaction_data['transaction']
+                    if isinstance(transaction, Transaction):
+                        if transaction.sender == account_name:
+                            balance -= transaction.amount
+                        if transaction.recipient == account_name:
+                            balance += transaction.amount
+        return balance
+
+    def transaction_history(self, account_name):
+        history = []
+        for block in self.chain:
+            for transaction_data in block.transactions:
+                if 'transaction' in transaction_data:
+                    transaction = transaction_data['transaction']
+                    if isinstance(transaction, Transaction):
+                        if transaction.sender == account_name or transaction.recipient == account_name:
+                            history.append(transaction)
+        return history
+
+    def display_wallet_balance(self, account_name):
+        balance = self.get_balance(account_name)
+        print(f"Balance for {account_name}: {balance}")
+
+    def display_transaction_history(self, account_name):
+        history = self.transaction_history(account_name)
+        print(f"Transaction history for {account_name}:")
+        for transaction in history:
+            print(f"{transaction.sender} -> {transaction.recipient}: {transaction.amount}")
+
 def hash_data(data):
     return hashlib.sha256(str(data).encode()).hexdigest()
 
@@ -99,7 +132,9 @@ def user_interface():
         print("\nOptions:")
         print("1. Add a transaction")
         print("2. Display blockchain")
-        print("3. Exit")
+        print("3. Display wallet balance")
+        print("4. Display transaction history")
+        print("5. Exit")
 
         choice = input("Enter your choice: ")
 
@@ -139,6 +174,14 @@ def user_interface():
             print("----------------------------")
 
         elif choice == '3':
+            account_name = input("Enter account name: ")
+            blockchain.display_wallet_balance(account_name)
+
+        elif choice == '4':
+            account_name = input("Enter account name: ")
+            blockchain.display_transaction_history(account_name)
+
+        elif choice == '5':
             print("Exiting the blockchain application. Goodbye!")
             break
 
